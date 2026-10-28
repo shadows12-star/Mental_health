@@ -22,24 +22,25 @@ The application also uses LangGraph checkpointing to preserve chatbot conversati
 Explore the main features of MindWell AI.
 
 ### 🏠 Dashboard
-<!-- Replace with a screenshot of your actual dashboard -->
-![MindWell AI Dashboard](docs/screenshots/dashboard.png)
+<img width="1254" height="1296" alt="image" src="https://github.com/user-attachments/assets/ef55bda8-c329-4a2e-9bfe-1cbb978ea37f" />
+
 
 ### 📝 Wellness Assessment
 <!-- Replace with a screenshot of your assessment form -->
 ![Wellness Assessment](docs/screenshots/assessment.png)
 
 ### 📊 Assessment Results & Progress
-<!-- Replace with a screenshot of your results and charts -->
-![Assessment Results](docs/screenshots/assessment-results.png)
+<img width="1255" height="1310" alt="image" src="https://github.com/user-attachments/assets/ecdc7f9b-91e5-44bf-8d50-7ee6e2d734de" />
+<img width="1230" height="1303" alt="image" src="https://github.com/user-attachments/assets/8e77e457-6e38-4e74-b47a-369d1c0d163a" />
+<img width="1097" height="1285" alt="image" src="https://github.com/user-attachments/assets/90d342e8-5e46-4637-90d1-ff0e5499d48e" />
+
 
 ### 🤖 AI Wellness Chatbot
-<!-- Replace with a screenshot of your working chatbot -->
-![AI Wellness Chatbot](docs/screenshots/chatbot.png)
+<img width="1227" height="1248" alt="image" src="https://github.com/user-attachments/assets/64bac434-b727-42af-be6e-9db4891be8bc" />
 
-### 💡 AI-Generated Recommendations
-<!-- Replace with a screenshot of your recommendations -->
-![AI Wellness Recommendations](docs/screenshots/recommendations.png)
+
+### 💡 Profile
+<img width="1275" height="1247" alt="image" src="https://github.com/user-attachments/assets/d2f0ba54-d125-41d9-92b3-684b536d91cf" />
 
 
 ## ✨ Features
