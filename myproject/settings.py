@@ -15,30 +15,48 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load local .env before reading environment variables.
+# Variables configured on Vercel are provided by the platform.
+load_dotenv(BASE_DIR / ".env")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+# Security
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-2)tzm_4)=t0(!5h%#3p(al*8vtlij4f^5aj)=w&43bf*)-$%!$")
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if not SECRET_KEY:
+    if os.getenv("VERCEL"):
+        raise RuntimeError(
+            "DJANGO_SECRET_KEY is missing from Vercel."
+        )
+    SECRET_KEY = "django-insecure-local-development-only"
+
+DEBUG = os.getenv("DEBUG", "True").lower() in {
+    "true", "1", "yes"
+}
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".vercel.app",
 ]
-load_dotenv(BASE_DIR / ".env")
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.vercel.app",
+]
+
+# AI services
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
+
 GROQ_MODEL = os.getenv(
     "GROQ_MODEL",
-    "openai/gpt-oss-20b"
+    "openai/gpt-oss-20b",
 )
 
 # Application definition
