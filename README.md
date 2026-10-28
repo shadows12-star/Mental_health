@@ -122,10 +122,10 @@ The agent decides when to use its tools; it does not necessarily call every tool
 
 ## 📁 Project Structure
 
-The following is a representative structure. Adjust filenames to match your actual repository.
+
 
 ```text
-Mental-Health/
+myproject/
 │
 ├── manage.py
 ├── requirements.txt
@@ -171,18 +171,13 @@ Mental-Health/
 │   ├── assessments/
 │   ├── dashboard/
 │   └── wellness_ai/
-│       └── chat.html
 │
-├── static/
-│   ├── css/
-│   ├── js/
-│   └── images/
-│
-└── model/
-    └── trained_model.joblib
+└── ml_models/
+    └── mental_health_pipeline.joblib
+    └── model_metadata.json
 ```
 
-**Note:** The model artifact's filename and location must match your actual configuration. Do not commit private datasets, credentials, or sensitive user records.
+
 
 ---
 
