@@ -16,22 +16,6 @@ The application also uses LangGraph checkpointing to preserve chatbot conversati
 
 **Try MindWell AI:** [Open Live Application](https://YOUR-LIVE-URL)
 
-> Replace the placeholder URL with your deployed application's actual URL.
-> If the project is not deployed yet, remove the link until it is available.
-
-### Demo Account
-
-If you provide a demo account, add its details here:
-
-- **Application URL:** YOUR-LIVE-URL
-- **Username:** YOUR-DEMO-USERNAME
-- **Password:** Do not publish a real or personal password.
-
-Alternatively, visitors can register for their own account.
-
-**Note:** The live application depends on the hosting provider's availability,
-database persistence, and the configured Groq and Tavily API quotas.
-
 
 ## 📸 Screenshots
 
