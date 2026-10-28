@@ -1,20 +1,16 @@
 
-from contextlib import closing
 import logging
-import sqlite3
+from contextlib import closing
 
 from django.conf import settings
+
 from langchain_core.messages import HumanMessage
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.postgres import PostgresSaver
 
 from .agent import build_wellness_agent
 
 
 logger = logging.getLogger(__name__)
-
-DATABASE_PATH = str(
-    settings.DATABASES["default"]["NAME"]
-)
 
 ERROR_MESSAGE = (
     "I'm having trouble responding right now. "
@@ -23,21 +19,15 @@ ERROR_MESSAGE = (
 
 
 def get_thread_id(user):
-    """
-    Each Django user has one persistent
-    LangGraph conversation thread.
-    """
+    """Give each user a persistent conversation thread."""
     return f"mindwell-user-{user.pk}"
 
 
 def get_config(user):
-    """
-    LangGraph uses the thread ID to locate
-    the latest saved conversation state.
-    """
+    """Configuration used to load and save conversation state."""
     return {
         "configurable": {
-            "thread_id": get_thread_id(user)
+            "thread_id": get_thread_id(user),
         },
         "recursion_limit": 8,
     }
@@ -46,33 +36,34 @@ def get_config(user):
 def get_agent(checkpointer, user):
     return build_wellness_agent(
         user_id=user.pk,
-        checkpointer=checkpointer
+        checkpointer=checkpointer,
     )
 
 
+def get_database_url():
+    database_url = getattr(
+        settings, "DATABASE_URL", None
+    )
+
+    if not database_url:
+        raise RuntimeError(
+            "DATABASE_URL is not configured."
+        )
+
+    return database_url
+
+
 def send_chat_message(user, message):
-    """
-    Send a new message to the agent.
-
-    LangGraph loads the previous conversation
-    and saves the new state automatically.
-    """
-
-    config = get_config(user)
-
+    """Invoke the agent with persistent PostgreSQL checkpoints."""
     try:
-        with closing(sqlite3.connect(
-            DATABASE_PATH,
-            check_same_thread=False,
-            timeout=30
-        )) as conn:
+        with PostgresSaver.from_conn_string(
+            get_database_url()
+        ) as checkpointer:
 
-            checkpointer = SqliteSaver(conn)
+            # Ensure LangGraph checkpoint tables exist.
+            checkpointer.setup()
 
-            agent = get_agent(
-                checkpointer,
-                user
-            )
+            agent = get_agent(checkpointer, user)
 
             result = agent.invoke(
                 {
@@ -80,79 +71,68 @@ def send_chat_message(user, message):
                         HumanMessage(content=message)
                     ]
                 },
-                config=config
+                config=get_config(user),
             )
 
-            last_message = result["messages"][-1]
+            response = result["messages"][-1].content
 
-            response = last_message.content
+            if isinstance(response, str) and response.strip():
+                return response.strip()
 
-            if not isinstance(response, str):
-                return ERROR_MESSAGE
-
-            if not response.strip():
-                return ERROR_MESSAGE
-
-            return response.strip()
+            logger.error("Chat agent returned an empty response.")
+            return ERROR_MESSAGE
 
     except Exception:
-        logger.exception(
-            "LangGraph chat request failed"
-        )
+        logger.exception("LangGraph chat request failed")
         return ERROR_MESSAGE
 
 
 def get_chat_history(user):
-    """
-    Retrieve the most recent visible messages
-    from the user's LangGraph thread.
-    """
+    """Load the latest visible messages from PostgreSQL."""
+    try:
+        with PostgresSaver.from_conn_string(
+            get_database_url()
+        ) as checkpointer:
 
-    config = get_config(user)
+            checkpointer.setup()
 
-    with closing(sqlite3.connect(
-        DATABASE_PATH,
-        check_same_thread=False,
-        timeout=30
-    )) as conn:
+            agent = get_agent(checkpointer, user)
 
-        checkpointer = SqliteSaver(conn)
+            state = agent.get_state(get_config(user))
 
-        agent = get_agent(
-            checkpointer,
-            user
+            if not state.values:
+                return []
+
+            messages = state.values.get("messages", [])
+            history = []
+
+            for msg in messages:
+                if msg.type not in ("human", "ai"):
+                    continue
+
+                # Don't display internal tool-call messages.
+                if getattr(msg, "tool_calls", None):
+                    continue
+
+                if not isinstance(msg.content, str):
+                    continue
+
+                if not msg.content.strip():
+                    continue
+
+                history.append({
+                    "role": (
+                        "user"
+                        if msg.type == "human"
+                        else "assistant"
+                    ),
+                    "content": msg.content,
+                })
+
+            return history[-30:]
+
+    except Exception:
+        logger.exception(
+            "Failed to load LangGraph chat history"
         )
-
-        state = agent.get_state(config)
-
-        messages = state.values.get(
-            "messages", []
-        )
-
-        history = []
-
-        for msg in messages:
-
-            if msg.type not in ("human", "ai"):
-                continue
-
-            # Hide internal tool-calling messages
-            if getattr(msg, "tool_calls", None):
-                continue
-
-            if not isinstance(msg.content, str):
-                continue
-
-            if not msg.content.strip():
-                continue
-
-            history.append({
-                "role": (
-                    "user"
-                    if msg.type == "human"
-                    else "assistant"
-                ),
-                "content": msg.content
-            })
-
-        return history[-30:]
+        raise

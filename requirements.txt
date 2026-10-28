@@ -25,3 +25,4 @@ langgraph-checkpoint-sqlite
 Pillow
 dj-database-url
 psycopg[binary]
+langgraph-checkpoint-postgres
