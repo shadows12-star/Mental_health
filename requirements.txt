@@ -26,3 +26,5 @@ Pillow
 dj-database-url
 psycopg[binary]
 langgraph-checkpoint-postgres
+cloudinary>=2.0,<3
+django-cloudinary-storage>=1.0,<2
