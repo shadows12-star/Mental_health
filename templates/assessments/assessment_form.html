@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}
+Mental Health Assessment - MindWell AI
+{% endblock %}
+
+{% block content %}
+
+<style>
+  .form-card {
+    background: var(--mw-surface);
+    border: 1px solid var(--mw-border);
+    border-radius: 22px;
+    box-shadow: var(--mw-shadow);
+    padding: 2.25rem;
+  }
+
+  .form-head {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .form-head-icon {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: var(--mw-primary-soft);
+    color: var(--mw-primary);
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+  }
+  .form-head h2 {
+    font-size: clamp(1.4rem, 1.15rem + 1vw, 1.85rem);
+    font-weight: 800;
+    margin: 0 0 .15rem;
+  }
+  .form-head p { margin: 0; }
+
+  .note {
+    display: flex;
+    gap: .65rem;
+    align-items: flex-start;
+    padding: .85rem 1rem;
+    border-radius: 12px;
+    background: var(--mw-primary-soft);
+    border: 1px solid #b9ddd8;
+    color: var(--mw-primary-dark);
+    font-size: .92rem;
+    margin-bottom: 1.75rem;
+  }
+  .note i { margin-top: 2px; }
+
+  .note.danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+  }
+  .note.danger ul { margin: 0; padding-left: 1.1rem; list-style: none; padding: 0; }
+
+  .field .form-label {
+    font-weight: 600;
+    font-size: .88rem;
+    margin-bottom: .4rem;
+  }
+
+  /* Style whatever widgets Django renders */
+  .field input:not([type=checkbox]):not([type=radio]),
+  .field select,
+  .field textarea {
+    display: block;
+    width: 100%;
+    padding: .65rem .9rem;
+    font: inherit;
+    font-size: .95rem;
+    color: var(--mw-ink);
+    background-color: #fff;
+    border: 1px solid var(--mw-border);
+    border-radius: 12px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.4rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235d716e' viewBox='0 0 16 16'%3E%3Cpath d='M1.65 5.65a.5.5 0 0 1 .7 0L8 11.29l5.65-5.64a.5.5 0 0 1 .7.7l-6 6a.5.5 0 0 1-.7 0l-6-6a.5.5 0 0 1 0-.7z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .9rem center;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: 0;
+    border-color: var(--mw-primary);
+    box-shadow: 0 0 0 .22rem rgba(15, 118, 110, .16);
+  }
+  .field:has(.field-error) input,
+  .field:has(.field-error) select {
+    border-color: #dc2626;
+  }
+
+  .field .form-text {
+    margin-top: .4rem;
+    font-size: .8rem;
+    color: var(--mw-muted);
+  }
+  .field-error {
+    display: flex;
+    gap: .4rem;
+    align-items: flex-start;
+    margin-top: .4rem;
+    font-size: .83rem;
+    color: #b91c1c;
+  }
+
+  .form-submit {
+    width: 100%;
+    padding: .85rem 1rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 576px) {
+    .form-card { padding: 1.5rem 1.15rem; border-radius: 18px; }
+  }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="form-card">
+
+      <div class="form-head">
+        <div class="form-head-icon" aria-hidden="true">
+          <i class="bi bi-clipboard2-pulse"></i>
+        </div>
+        <div>
+          <h2>
+            Mental Health Assessment
+          </h2>
+
+          <p class="text-muted">
+            Answer the following questions to receive
+            an experimental wellness score.
+          </p>
+        </div>
+      </div>
+
+      <div class="note">
+        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+        <span>
+          This is a research-based prediction, not a
+          clinical assessment or medical diagnosis.
+        </span>
+      </div>
+
+      <form method="POST" id="assessmentForm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="note danger" role="alert">
+            <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
+            <div>{{ form.non_field_errors }}</div>
+          </div>
+        {% endif %}
+
+        <div class="row g-3">
+          {% for field in form %}
+            <div class="col-md-6 field">
+
+              <label class="form-label"
+                     for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+
+              {{ field }}
+
+              {% if field.help_text %}
+                <div class="form-text">
+                  {{ field.help_text }}
+                </div>
+              {% endif %}
+
+              {% for error in field.errors %}
+                <div class="field-error" role="alert">
+                  <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                  <span>{{ error }}</span>
+                </div>
+              {% endfor %}
+
+            </div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" id="assessmentSubmit"
+                class="btn btn-primary form-submit">
+          Predict My Wellness Score
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.getElementById("assessmentForm").addEventListener("submit", function () {
+  const btn = document.getElementById("assessmentSubmit");
+  if (!this.checkValidity()) return;
+  btn.disabled = true;
+  btn.innerHTML =
+    '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Calculating...';
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Login - MindWell AI{% endblock %}
+
+{% block content %}
+
+<style>
+    .auth-wrap {
+        min-height: calc(100vh - 260px);
+        display: flex;
+        align-items: center;
+    }
+
+    .auth-card {
+        background: var(--mw-surface);
+        border: 1px solid var(--mw-border);
+        border-radius: 22px;
+        box-shadow: 0 2px 4px rgba(18, 48, 44, .05), 0 18px 40px rgba(18, 48, 44, .08);
+        padding: 2.25rem 2rem;
+    }
+
+    .auth-mark {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 1.1rem;
+        border-radius: 17px;
+        background: linear-gradient(135deg, #14958a, var(--mw-primary-dark));
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 1.6rem;
+        box-shadow: 0 8px 18px rgba(15, 118, 110, .28);
+    }
+
+    .auth-card h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: .35rem;
+    }
+
+    .auth-sub {
+        margin-bottom: 1.75rem;
+    }
+
+    .auth-field { margin-bottom: 1.1rem; }
+
+    .auth-field .form-label {
+        font-weight: 600;
+        font-size: .88rem;
+        margin-bottom: .4rem;
+    }
+
+    /* Style whatever widgets Django renders */
+    .auth-field input:not([type=checkbox]):not([type=radio]),
+    .auth-field select,
+    .auth-field textarea {
+        display: block;
+        width: 100%;
+        padding: .7rem .95rem;
+        font: inherit;
+        font-size: .96rem;
+        color: var(--mw-ink);
+        background: #fff;
+        border: 1px solid var(--mw-border);
+        border-radius: 12px;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .auth-field input:focus,
+    .auth-field select:focus,
+    .auth-field textarea:focus {
+        outline: 0;
+        border-color: var(--mw-primary);
+        box-shadow: 0 0 0 .22rem rgba(15, 118, 110, .16);
+    }
+    .auth-field:has(.auth-error) input {
+        border-color: #dc2626;
+    }
+    .auth-field:has(.auth-error) input:focus {
+        box-shadow: 0 0 0 .22rem rgba(220, 38, 38, .14);
+    }
+
+    .auth-error {
+        display: flex;
+        align-items: flex-start;
+        gap: .4rem;
+        margin-top: .45rem;
+        font-size: .83rem;
+        color: #b91c1c;
+    }
+
+    .auth-alert {
+        display: flex;
+        gap: .55rem;
+        align-items: flex-start;
+        padding: .75rem .95rem;
+        margin-bottom: 1.25rem;
+        border-radius: 12px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        font-size: .9rem;
+    }
+
+    .auth-submit {
+        width: 100%;
+        padding: .8rem 1rem;
+        font-size: 1rem;
+        margin-top: .35rem;
+    }
+
+    .auth-switch {
+        margin: 1.5rem 0 0;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--mw-border);
+        text-align: center;
+        color: var(--mw-muted);
+        font-size: .93rem;
+    }
+    .auth-switch a {
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: .2rem;
+    }
+    .auth-switch a:hover { text-decoration: underline; }
+
+    /* Password visibility toggle */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 3rem !important; }
+    .pw-toggle {
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--mw-muted);
+        display: grid;
+        place-items: center;
+    }
+    .pw-toggle:hover { background: var(--mw-bg); color: var(--mw-ink); }
+
+    @media (max-width: 576px) {
+        .auth-card { padding: 1.75rem 1.25rem; border-radius: 18px; }
+        .auth-wrap { min-height: 0; }
+    }
+</style>
+
+<div class="row justify-content-center auth-wrap">
+    <div class="col-md-8 col-lg-5 col-xl-4">
+
+        <div class="auth-card">
+
+            <div class="auth-mark" aria-hidden="true">
+                <i class="bi bi-heart-pulse"></i>
+            </div>
+
+            <h3 class="text-center">
+                Welcome Back
+            </h3>
+
+            <p class="text-muted text-center auth-sub">
+                Login to your wellness dashboard.
+            </p>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% for error in form.non_field_errors %}
+                    <div class="auth-alert" role="alert">
+                        <i class="bi bi-exclamation-circle-fill mt-1" aria-hidden="true"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                {% endfor %}
+
+                {% for field in form %}
+                    <div class="auth-field">
+                        <label class="form-label" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        <div>{{ field }}</div>
+
+                        {% for error in field.errors %}
+                            <small class="auth-error" role="alert">
+                                <i class="bi bi-exclamation-circle mt-1" aria-hidden="true"></i>
+                                <span>{{ error }}</span>
+                            </small>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit"
+                        class="btn btn-primary auth-submit">
+                    Login
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <a href="{% url 'register' %}">Register</a>
+            </p>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Show / hide password buttons
+    document.querySelectorAll(".auth-field input[type=password]").forEach(function (input) {
+        const wrap = document.createElement("div");
+        wrap.className = "pw-wrap";
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(input);
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pw-toggle";
+        btn.setAttribute("aria-label", "Show password");
+        btn.innerHTML = '<i class="bi bi-eye" aria-hidden="true"></i>';
+
+        btn.addEventListener("click", function () {
+            const show = input.type === "password";
+            input.type = show ? "text" : "password";
+            btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+            btn.innerHTML = '<i class="bi bi-' + (show ? "eye-slash" : "eye") + '" aria-hidden="true"></i>';
+        });
+
+        wrap.appendChild(btn);
+    });
+
+    // Focus the first field
+    const first = document.querySelector(".auth-field input:not([type=hidden])");
+    if (first) first.focus();
+});
+</script>
+
+{% endblock %}
