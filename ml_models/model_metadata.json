@@ -1,0 +1,29 @@
+{
+  "top_countries": [
+    "Other",
+    "India",
+    "USA",
+    "Canada",
+    "Australia",
+    "UK",
+    "Germany",
+    "Mexico",
+    "Turkey",
+    "France"
+  ],
+  "feature_columns": [
+    "Grouped_country",
+    "Most_Used_Platform",
+    "Gender",
+    "Academic_Level",
+    "Purpose_Of_Use",
+    "Age",
+    "Avg_Daily_Usage_Hours",
+    "Daily_Unlocks",
+    "Physical_Activity_Hours",
+    "Sleep_Hours_Per_Night",
+    "Stress_Level",
+    "Study_Hours"
+  ],
+  "model_version": "1.0"
+}

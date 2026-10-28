@@ -27,10 +27,7 @@ media/
 staticfiles/
 
 # Trained ML models and datasets
-ml_models/*.joblib
-ml_models/*.pkl
-ml_models/*.pickle
-ml_models/*.json
+
 *.csv
 *.parquet
 
