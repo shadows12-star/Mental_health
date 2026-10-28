@@ -14,7 +14,7 @@ The application also uses LangGraph checkpointing to preserve chatbot conversati
 
 ## 🌐 Live Demo
 
-**Try MindWell AI:** [Open Live Application](https://YOUR-LIVE-URL)
+**Try MindWell AI:** [Open Live Application](https://mental-health-one-omega.vercel.app/)
 
 
 ## 📸 Screenshots
