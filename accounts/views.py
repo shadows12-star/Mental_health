@@ -68,3 +68,54 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("login")
+
+
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+
+from .forms import ProfileForm
+from .models import UserProfile
+
+
+@login_required
+def profile_view(request):
+    profile, created = UserProfile.objects.get_or_create(
+        user=request.user
+    )
+
+    if request.method == "POST":
+        form = ProfileForm(
+            request.POST,
+            request.FILES,
+            instance=profile,
+            user=request.user,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Your profile has been saved successfully."
+            )
+
+            return redirect("profile")
+
+    else:
+        form = ProfileForm(
+            instance=profile,
+            user=request.user,
+        )
+
+    return render(
+        request,
+        "accounts/profile.html",
+        {
+            "profile": profile,
+            "form": form,
+            "is_new_profile": created,
+        },
+    )
+

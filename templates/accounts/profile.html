@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - MindWell AI{% endblock %}
+
+{% block content %}
+
+<style>
+    .profile-card {
+        background: var(--mw-surface);
+        border: 1px solid var(--mw-border);
+        border-radius: 24px;
+        box-shadow: var(--mw-shadow);
+        overflow: hidden;
+    }
+
+    .profile-cover {
+        height: 120px;
+        background:
+            radial-gradient(90% 140% at 100% 0%, rgba(45, 190, 170, .45) 0%, rgba(45, 190, 170, 0) 60%),
+            linear-gradient(160deg, #0f5a52 0%, #0b3f3a 100%);
+    }
+
+    .profile-body { padding: 0 2rem 2.25rem; }
+
+    .avatar {
+        width: 104px;
+        height: 104px;
+        border-radius: 50%;
+        border: 5px solid var(--mw-surface);
+        background: var(--mw-primary-soft);
+        color: var(--mw-primary-dark);
+        display: grid;
+        place-items: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        overflow: hidden;
+        flex: none;
+        box-shadow: 0 4px 14px rgba(18, 48, 44, .12);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .profile-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 1.1rem 1.5rem;
+        margin-top: -52px;
+        margin-bottom: 1.75rem;
+    }
+    .profile-id { flex: 1 1 240px; padding-bottom: .25rem; }
+    .profile-id h4 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin: 0 0 .15rem;
+    }
+    .profile-id .email {
+        margin: 0 0 .5rem;
+        color: var(--mw-muted);
+        overflow-wrap: anywhere;
+    }
+    .handle {
+        display: inline-block;
+        padding: .2rem .7rem;
+        border-radius: 999px;
+        background: var(--mw-primary-soft);
+        color: var(--mw-primary-dark);
+        font-size: .82rem;
+        font-weight: 600;
+    }
+
+    .section-label {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    .info-item {
+        padding: .95rem 1.1rem;
+        border: 1px solid var(--mw-border);
+        border-radius: 14px;
+        background: #f8fbfa;
+     
+    }
+    .info-item.wide { grid-column: 1 / -1; }
+    .info-item small {
+        display: block;
+        margin-bottom: .2rem;
+        font-size: .76rem;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--mw-muted);
+    }
+    .info-item .value { overflow-wrap: anywhere; line-height: 1.55; }
+
+    /* ---------- Edit form ---------- */
+    .form-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 1.5rem; }
+
+    .upload-row {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.1rem;
+        border: 1px dashed #a9d3cd;
+        border-radius: 16px;
+        background: #f8fbfa;
+        margin-bottom: 1.75rem;
+    }
+    .upload-row .avatar { width: 84px; height: 84px; font-size: 1.8rem; border-width: 3px; }
+    .upload-row .form-label { margin-bottom: .4rem; }
+
+    .profile-form .form-label {
+        font-weight: 600;
+        font-size: .88rem;
+        margin-bottom: .4rem;
+    }
+    .profile-form input:not([type=checkbox]):not([type=radio]):not([type=file]),
+    .profile-form select,
+    .profile-form textarea {
+        display: block;
+        width: 100%;
+        padding: .65rem .9rem;
+        font: inherit;
+        font-size: .95rem;
+        color: var(--mw-ink);
+        background: #fff;
+        border: 1px solid var(--mw-border);
+        border-radius: 12px;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .profile-form input[readonly] {
+        background: #f3f6f6;
+        color: var(--mw-muted);
+        cursor: not-allowed;
+    }
+    .profile-form textarea { min-height: 120px; resize: vertical; }
+    .profile-form input:focus,
+    .profile-form select:focus,
+    .profile-form textarea:focus {
+        outline: 0;
+        border-color: var(--mw-primary);
+        box-shadow: 0 0 0 .22rem rgba(15, 118, 110, .16);
+    }
+    .profile-form input[type=file] {
+        display: block;
+        width: 100%;
+        font-size: .9rem;
+        color: var(--mw-muted);
+    }
+    .profile-form input[type=file]::file-selector-button {
+        margin-right: .9rem;
+        padding: .5rem 1rem;
+        border: 1px solid var(--mw-border);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--mw-ink);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color .15s;
+    }
+    .profile-form input[type=file]::file-selector-button:hover { background: var(--mw-primary-soft); }
+
+    .profile-form ul.errorlist {
+        list-style: none;
+        margin: .4rem 0 0;
+        padding: 0;
+        font-size: .83rem;
+        color: #b91c1c;
+    }
+    .profile-form .form-text { margin-top: .4rem; font-size: .8rem; color: var(--mw-muted); }
+
+    .form-alert {
+        padding: .75rem .95rem;
+        margin-bottom: 1.25rem;
+        border-radius: 12px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        font-size: .9rem;
+    }
+    .form-alert ul { margin: 0; padding: 0; list-style: none; }
+
+    .form-actions {
+        display: flex;
+        gap: .6rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--mw-border);
+    }
+    .email{
+        margin-top: 2rem !important;
+    }
+
+    @media (max-width: 576px) {
+        .profile-body { padding: 0 1.1rem 1.5rem; }
+        .info-grid { grid-template-columns: 1fr; }
+        .upload-row { flex-direction: column; align-items: flex-start; }
+        .profile-head .btn { width: 100%; }
+    }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-lg-9 col-xl-8">
+
+    <div class="mb-4">
+        <h2 class="fw-bold" style="font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); font-weight: 800;">My Profile</h2>
+        <p class="text-muted mb-0">
+            Manage your personal information and profile picture.
+        </p>
+    </div>
+
+    <div class="profile-card">
+
+        <div class="profile-cover" aria-hidden="true"></div>
+
+        <div class="profile-body">
+
+            {% if not is_new_profile and not form.is_bound %}
+
+                <!-- VIEW MODE -->
+
+                <div id="profileView">
+
+                    <div class="profile-head">
+
+                        {% if profile.profile_picture %}
+                            <div class="avatar">
+                                <img
+                                    src="{{ profile.profile_picture.url }}"
+                                    alt="Profile picture"
+                                >
+                            </div>
+                        {% else %}
+                            <div class="avatar" aria-hidden="true">
+                                {{ request.user.username|first|upper }}
+                            </div>
+                        {% endif %}
+
+                        <div class="profile-id">
+                            <h4>
+                                {% if request.user.first_name %}
+                                    {{ request.user.first_name }}
+                                    {{ request.user.last_name }}
+                                {% else %}
+                                    {{ request.user.username }}
+                                {% endif %}
+                            </h4>
+
+                            <p class="email">
+                                {{ request.user.email|default:"No email added" }}
+                            </p>
+
+                            <span class="handle">
+                                @{{ request.user.username }}
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary px-4"
+                            id="editProfileButton"
+                        >
+                            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit Profile
+                        </button>
+
+                    </div>
+
+                    <h5 class="section-label">
+                        Personal Information
+                    </h5>
+
+                    <div class="info-grid">
+
+                        <div class="info-item">
+                            <small>First name</small>
+                            <div class="value">{{ request.user.first_name|default:"Not provided" }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <small>Last name</small>
+                            <div class="value">{{ request.user.last_name|default:"Not provided" }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <small>Username</small>
+                            <div class="value">{{ request.user.username }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <small>Email</small>
+                            <div class="value">{{ request.user.email|default:"Not provided" }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <small>Date of birth</small>
+                            <div class="value">{{ profile.date_of_birth|default:"Not provided" }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <small>Location</small>
+                            <div class="value">{{ profile.location|default:"Not provided" }}</div>
+                        </div>
+
+                        <div class="info-item wide">
+                            <small>About me</small>
+                            <div class="value">{{ profile.bio|default:"No bio added"|linebreaksbr }}</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+            <!-- CREATE / EDIT FORM -->
+
+            <div
+                id="profileEdit"
+                class="profile-form pt-4"
+                {% if not is_new_profile and not form.is_bound %}
+                    style="display:none;"
+                {% endif %}
+            >
+
+                <h5 class="form-title">
+                    {% if is_new_profile %}
+                        Complete Your Profile
+                    {% else %}
+                        Edit Your Profile
+                    {% endif %}
+                </h5>
+
+                <form method="post"
+                      enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="form-alert" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="upload-row">
+
+                        <div class="avatar" id="avatarPreview">
+                            {% if profile.profile_picture %}
+                                <img
+                                    src="{{ profile.profile_picture.url }}"
+                                    alt="Current profile picture"
+                                >
+                            {% else %}
+                                <span aria-hidden="true">{{ request.user.username|first|upper }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex-grow-1 w-100">
+                            <label class="form-label" for="{{ form.profile_picture.id_for_label }}">
+                                Profile Picture
+                            </label>
+
+                            {{ form.profile_picture }}
+                            {{ form.profile_picture.errors }}
+
+                            <div class="form-text">
+                                Choose a profile image from your device.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="{{ request.user.username }}"
+                                readonly
+                            >
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.first_name.id_for_label }}">First name</label>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.last_name.id_for_label }}">Last name</label>
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.date_of_birth.id_for_label }}">Date of birth</label>
+                            {{ form.date_of_birth }}
+                            {{ form.date_of_birth.errors }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.location.id_for_label }}">Location</label>
+                            {{ form.location }}
+                            {{ form.location.errors }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label" for="{{ form.bio.id_for_label }}">About me</label>
+                            {{ form.bio }}
+                            {{ form.bio.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <button type="submit"
+                                class="btn btn-primary px-4">
+                            Save Profile
+                        </button>
+
+                        {% if not is_new_profile %}
+                            <a href="{% url 'profile' %}"
+                               class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        {% endif %}
+
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // View mode -> edit mode
+    const editBtn = document.getElementById("editProfileButton");
+    const view = document.getElementById("profileView");
+    const edit = document.getElementById("profileEdit");
+
+    if (editBtn && view && edit) {
+        editBtn.addEventListener("click", function () {
+            view.style.display = "none";
+            edit.style.display = "block";
+            edit.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    }
+
+    // Live preview of the chosen profile picture
+    const fileInput = document.querySelector("#profileEdit input[type=file]");
+    const preview = document.getElementById("avatarPreview");
+
+    if (fileInput && preview) {
+        fileInput.addEventListener("change", function () {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file || !file.type.startsWith("image/")) return;
+
+            const img = document.createElement("img");
+            img.alt = "Selected profile picture preview";
+            img.src = URL.createObjectURL(file);
+            preview.replaceChildren(img);
+        });
+    }
+});
+</script>
+
+{% endblock %}
