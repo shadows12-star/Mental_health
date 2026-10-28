@@ -12,6 +12,52 @@ The application also uses LangGraph checkpointing to preserve chatbot conversati
 
 ---
 
+## 🌐 Live Demo
+
+**Try MindWell AI:** [Open Live Application](https://YOUR-LIVE-URL)
+
+> Replace the placeholder URL with your deployed application's actual URL.
+> If the project is not deployed yet, remove the link until it is available.
+
+### Demo Account
+
+If you provide a demo account, add its details here:
+
+- **Application URL:** YOUR-LIVE-URL
+- **Username:** YOUR-DEMO-USERNAME
+- **Password:** Do not publish a real or personal password.
+
+Alternatively, visitors can register for their own account.
+
+**Note:** The live application depends on the hosting provider's availability,
+database persistence, and the configured Groq and Tavily API quotas.
+
+
+## 📸 Screenshots
+
+Explore the main features of MindWell AI.
+
+### 🏠 Dashboard
+<!-- Replace with a screenshot of your actual dashboard -->
+![MindWell AI Dashboard](docs/screenshots/dashboard.png)
+
+### 📝 Wellness Assessment
+<!-- Replace with a screenshot of your assessment form -->
+![Wellness Assessment](docs/screenshots/assessment.png)
+
+### 📊 Assessment Results & Progress
+<!-- Replace with a screenshot of your results and charts -->
+![Assessment Results](docs/screenshots/assessment-results.png)
+
+### 🤖 AI Wellness Chatbot
+<!-- Replace with a screenshot of your working chatbot -->
+![AI Wellness Chatbot](docs/screenshots/chatbot.png)
+
+### 💡 AI-Generated Recommendations
+<!-- Replace with a screenshot of your recommendations -->
+![AI Wellness Recommendations](docs/screenshots/recommendations.png)
+
+
 ## ✨ Features
 
 ### 🤖 Machine Learning Predictions
