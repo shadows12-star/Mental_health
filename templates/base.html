@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#0f4c45" />
 
     <title>{% block title %}MindWell AI{% endblock %}</title>
@@ -63,6 +66,8 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
       }
 
       h1,
@@ -173,6 +178,7 @@
       .mw-brand-mark {
         width: 36px;
         height: 36px;
+        flex-shrink: 0;
         border-radius: 11px;
         background: linear-gradient(135deg, #14958a, var(--mw-primary-dark));
         color: #fff;
@@ -269,13 +275,19 @@
 
       /* ---------- Footer ---------- */
       .mw-footer {
+        flex-shrink: 0;
         margin-top: 3rem;
         background: #0b2f2b;
         color: rgba(255, 255, 255, 0.72);
         font-size: 0.92rem;
+        overflow-wrap: anywhere;
       }
+      /* Only vertical padding here: setting horizontal padding to 0
+         was removing Bootstrap's .container gutter, which made the
+         footer text touch the screen edges on phones. */
       .mw-footer-main {
-        padding: 3.5rem 0 2.5rem;
+        padding-top: 3.5rem;
+        padding-bottom: 2.5rem;
       }
       .mw-footer .mw-brand {
         color: #fff;
@@ -305,6 +317,7 @@
       }
       .mw-footer li {
         margin-bottom: 0.6rem;
+        line-height: 1.45;
       }
       .mw-footer a {
         color: rgba(255, 255, 255, 0.72);
@@ -326,15 +339,41 @@
         line-height: 1.6;
       }
       .mw-footer-help i {
+        flex-shrink: 0;
         color: #5eead4;
         font-size: 1.1rem;
         margin-top: 1px;
       }
       .mw-footer-bottom {
-        padding: 1.25rem 0;
+        padding-top: 1.25rem;
+        padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
         border-top: 1px solid rgba(255, 255, 255, 0.1);
         font-size: 0.83rem;
         color: rgba(255, 255, 255, 0.55);
+      }
+
+      /* Phones */
+      @media (max-width: 767.98px) {
+        .mw-footer {
+          margin-top: 2rem;
+          font-size: 0.9rem;
+        }
+        .mw-footer-main {
+          padding-top: 2.5rem;
+          padding-bottom: 1.75rem;
+        }
+        .mw-footer-about {
+          max-width: 100%;
+        }
+        .mw-footer h6 {
+          margin-bottom: 0.75rem;
+        }
+        .mw-footer-help {
+          padding: 0.9rem 1rem;
+        }
+        .mw-footer-bottom {
+          text-align: center;
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -359,7 +398,6 @@
           <span>MindWell <span class="ai">AI</span></span>
         </a>
 
-        {% if user.is_authenticated %}
         <button
           class="navbar-toggler ms-auto"
           type="button"
@@ -371,7 +409,6 @@
         >
           <i class="bi bi-list fs-4" aria-hidden="true"></i>
         </button>
-        {% endif %}
 
         <div class="collapse navbar-collapse" id="mwNavbar">
           {% if user.is_authenticated %}
@@ -417,7 +454,7 @@
           <div
             class="mw-nav-actions ms-lg-auto d-flex align-items-center gap-3 {% if not user.is_authenticated %}ms-auto{% endif %}"
           >
-            {% if user.is_authenticated %} {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
             <a
               href="{% url 'profile' %}"
               class="d-inline-flex align-items-center gap-2 text-decoration-none"
@@ -442,7 +479,6 @@
 
               <span class="text-body"> {{ user.username }} </span>
             </a>
-            {% endif %}
 
             <form method="post" action="{% url 'logout' %}" class="m-0">
               {% csrf_token %}
@@ -492,7 +528,7 @@
     <footer class="mw-footer">
       <div class="container mw-footer-main">
         <div class="row g-4 g-lg-5">
-          <div class="col-lg-4">
+          <div class="col-12 col-lg-4">
             <a class="mw-brand" href="{% url 'dashboard' %}">
               <span class="mw-brand-mark"
                 ><i class="bi bi-heart-pulse" aria-hidden="true"></i
@@ -530,7 +566,7 @@
             </ul>
           </div>
 
-          <div class="col-md-4 col-lg-4">
+          <div class="col-12 col-md-4 col-lg-4">
             <h6>Need urgent help?</h6>
             <div class="mw-footer-help">
               <i class="bi bi-telephone-heart" aria-hidden="true"></i>
